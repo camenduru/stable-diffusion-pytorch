@@ -19,19 +19,19 @@ class SelfAttention(nn.Layer):
 
         q, k, v = self.in_proj(x).chunk(3, axis=-1)
 
-        q = q.view(interim_shape).transpose(1, 2)
-        k = k.view(interim_shape).transpose(1, 2)
-        v = v.view(interim_shape).transpose(1, 2)
+        q = q.reshape(interim_shape).transpose([0, 2, 1, 3])
+        k = k.reshape(interim_shape).transpose([0, 2, 1, 3])
+        v = v.reshape(interim_shape).transpose([0, 2, 1, 3])
 
-        weight = q @ k.transpose(-1, -2)
+        weight = paddle.matmul(q, k.transpose([0, 1, 3, 2]))
         if causal_mask:
-            mask = paddle.ones_like(weight, dtype=paddle.bool).triu(1)
-            weight.masked_fill_(mask, -paddle.inf)
+            mask = paddle.triu(paddle.ones_like(weight, dtype=paddle.bool))
+            weight = paddle.where(mask, weight, paddle.full_like(weight, -float("inf")))
         weight /= math.sqrt(self.d_head)
         weight = F.softmax(weight, axis=-1)
 
-        output = weight @ v
-        output = output.transpose(1, 2)
+        output = paddle.matmul(weight, v)
+        output = output.transpose([0, 2, 1, 3])
         output = output.reshape(input_shape)
         output = self.out_proj(output)
         return output
@@ -55,9 +55,9 @@ class CrossAttention(nn.Layer):
         k = self.k_proj(y)
         v = self.v_proj(y)
 
-        q = q.view(interim_shape).transpose(1, 2)
-        k = k.view(interim_shape).transpose(1, 2)
-        v = v.view(interim_shape).transpose(1, 2)
+        q = q.reshape(interim_shape).transpose(1, 2)
+        k = k.reshape(interim_shape).transpose(1, 2)
+        v = v.reshape(interim_shape).transpose(1, 2)
 
         weight = q @ k.transpose(-1, -2)
         weight /= math.sqrt(self.d_head)
@@ -65,6 +65,6 @@ class CrossAttention(nn.Layer):
 
         output = weight @ v
         output = output.transpose(1, 2).contiguous()
-        output = output.view(input_shape)
+        output = output.reshape(input_shape)
         output = self.out_proj(output)
         return output
