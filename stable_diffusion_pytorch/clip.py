@@ -48,7 +48,7 @@ class CLIP(nn.Layer):
         ])
         self.layernorm = nn.LayerNorm(768)
     
-    def forward(self, tokens: paddle.Tensor) -> paddle.FloatTensor:
+    def forward(self, tokens: paddle.Tensor) -> paddle.Tensor:
         tokens = tokens.type(paddle.long)
         
         state = self.embedding(tokens)
