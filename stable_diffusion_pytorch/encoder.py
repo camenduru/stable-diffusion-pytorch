@@ -34,7 +34,7 @@ class Encoder(nn.Sequential):
                 x = F.pad(x, (0, 1, 0, 1))
             x = module(x)
 
-        mean, log_variance = paddle.chunk(x, 2, dim=1)
+        mean, log_variance = paddle.chunk(x, 2, axis=1)
         log_variance = paddle.clamp(log_variance, -30, 20)
         variance = log_variance.exp()
         stdev = variance.sqrt()

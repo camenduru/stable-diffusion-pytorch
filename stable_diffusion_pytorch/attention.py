@@ -17,7 +17,7 @@ class SelfAttention(nn.Layer):
         batch_size, sequence_length, d_embed = input_shape
         interim_shape = (batch_size, sequence_length, self.n_heads, self.d_head)
 
-        q, k, v = self.in_proj(x).chunk(3, dim=-1)
+        q, k, v = self.in_proj(x).chunk(3, axis=-1)
 
         q = q.view(interim_shape).transpose(1, 2)
         k = k.view(interim_shape).transpose(1, 2)
@@ -28,7 +28,7 @@ class SelfAttention(nn.Layer):
             mask = paddle.ones_like(weight, dtype=paddle.bool).triu(1)
             weight.masked_fill_(mask, -paddle.inf)
         weight /= math.sqrt(self.d_head)
-        weight = F.softmax(weight, dim=-1)
+        weight = F.softmax(weight, axis=-1)
 
         output = weight @ v
         output = output.transpose(1, 2)
@@ -61,7 +61,7 @@ class CrossAttention(nn.Layer):
 
         weight = q @ k.transpose(-1, -2)
         weight /= math.sqrt(self.d_head)
-        weight = F.softmax(weight, dim=-1)
+        weight = F.softmax(weight, axis=-1)
 
         output = weight @ v
         output = output.transpose(1, 2).contiguous()

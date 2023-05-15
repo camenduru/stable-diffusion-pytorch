@@ -88,7 +88,7 @@ class AttentionBlock(nn.Layer):
 
         residue_short = x
         x = self.layernorm_3(x)
-        x, gate = self.linear_geglu_1(x).chunk(2, dim=-1)
+        x, gate = self.linear_geglu_1(x).chunk(2, axis=-1)
         x = x * F.gelu(gate)
         x = self.linear_geglu_2(x)
         x += residue_short
@@ -164,7 +164,7 @@ class UNet(nn.Layer):
         x = self.bottleneck(x, context, time)
 
         for layers in self.decoders:
-            x = paddle.cat((x, skip_connections.pop()), dim=1)
+            x = paddle.cat((x, skip_connections.pop()), axis=1)
             x = layers(x, context, time)
         
         return x
