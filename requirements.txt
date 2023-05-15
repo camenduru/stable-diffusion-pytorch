@@ -1,4 +1,4 @@
-torch >= 1.9
+paddle >= 1.9
 numpy
 Pillow
 regex

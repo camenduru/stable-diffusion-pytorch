@@ -1,6 +1,6 @@
-import torch
-from torch import nn
-from torch.nn import functional as F
+import paddle
+from paddle import nn
+from paddle.nn import functional as F
 import math
 
 
@@ -25,8 +25,8 @@ class SelfAttention(nn.Module):
 
         weight = q @ k.transpose(-1, -2)
         if causal_mask:
-            mask = torch.ones_like(weight, dtype=torch.bool).triu(1)
-            weight.masked_fill_(mask, -torch.inf)
+            mask = paddle.ones_like(weight, dtype=paddle.bool).triu(1)
+            weight.masked_fill_(mask, -paddle.inf)
         weight /= math.sqrt(self.d_head)
         weight = F.softmax(weight, dim=-1)
 

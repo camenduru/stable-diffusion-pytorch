@@ -1,6 +1,6 @@
-import torch
-from torch import nn
-from torch.nn import functional as F
+import paddle
+from paddle import nn
+from paddle.nn import functional as F
 from .attention import SelfAttention
 
 

@@ -1,4 +1,4 @@
-import torch
+import paddle
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
@@ -56,21 +56,21 @@ def generate(
         n_inference_steps (`int`, *optional*, defaults to 50):
             The number of denoising steps. More denoising steps usually lead to a higher quality image at the
             expense of slower inference. This parameter will be modulated by `strength`.
-        models (`Dict[str, torch.nn.Module]`, *optional*):
+        models (`Dict[str, paddle.nn.Module]`, *optional*):
             Preloaded models. If some or all models are not provided, they will be loaded dynamically.
         seed (`int`, *optional*):
             A seed to make generation deterministic.
-        device (`str` or `torch.device`, *optional*):
-            PyTorch device which the image generation happens. If not provided, 'cuda' or 'cpu' will be used.
-        idle_device (`str` or `torch.device`, *optional*):
-            PyTorch device which the models no longer in use are moved to.
+        device (`str` or `paddle.device`, *optional*):
+            Paddle device which the image generation happens. If not provided, 'cuda' or 'cpu' will be used.
+        idle_device (`str` or `paddle.device`, *optional*):
+            Paddle device which the models no longer in use are moved to.
     Returns:
         `List[PIL.Image.Image]`:
             The generated images.
     Note:
         This docstring is heavily copied from huggingface/diffusers.
     """
-    with torch.no_grad():
+    with paddle.no_grad():
         if not isinstance(prompts, (list, tuple)) or not prompts:
             raise ValueError("prompts must be a non-empty list or tuple")
 
@@ -91,14 +91,14 @@ def generate(
             raise ValueError("height and width must be a multiple of 8")
 
         if device is None:
-            device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+            device = paddle.device('cuda' if paddle.cuda.is_available() else 'cpu')
 
         if idle_device:
             to_idle = lambda x: x.to(idle_device)
         else:
             to_idle = lambda x: x
 
-        generator = torch.Generator(device=device)
+        generator = paddle.Generator(device=device)
         if seed is None:
             generator.seed()
         else:
@@ -109,15 +109,15 @@ def generate(
         clip.to(device)
         if do_cfg:
             cond_tokens = tokenizer.encode_batch(prompts)
-            cond_tokens = torch.tensor(cond_tokens, dtype=torch.long, device=device)
+            cond_tokens = paddle.tensor(cond_tokens, dtype=paddle.long, device=device)
             cond_context = clip(cond_tokens)
             uncond_tokens = tokenizer.encode_batch(uncond_prompts)
-            uncond_tokens = torch.tensor(uncond_tokens, dtype=torch.long, device=device)
+            uncond_tokens = paddle.tensor(uncond_tokens, dtype=paddle.long, device=device)
             uncond_context = clip(uncond_tokens)
-            context = torch.cat([cond_context, uncond_context])
+            context = paddle.cat([cond_context, uncond_context])
         else:
             tokens = tokenizer.encode_batch(prompts)
-            tokens = torch.tensor(tokens, dtype=torch.long, device=device)
+            tokens = paddle.tensor(tokens, dtype=paddle.long, device=device)
             context = clip(tokens)
         to_idle(clip)
         del tokenizer, clip
@@ -148,26 +148,26 @@ def generate(
 
                 input_image = input_image.resize((width, height))
                 input_image = np.array(input_image)
-                input_image = torch.tensor(input_image, dtype=torch.float32)
+                input_image = paddle.tensor(input_image, dtype=paddle.float32)
                 input_image = util.rescale(input_image, (0, 255), (-1, 1))
                 processed_input_images.append(input_image)
-            input_images_tensor = torch.stack(processed_input_images).to(device)
+            input_images_tensor = paddle.stack(processed_input_images).to(device)
             input_images_tensor = util.move_channel(input_images_tensor, to="first")
 
             _, _, height, width = input_images_tensor.shape
             noise_shape = (len(prompts), 4, height // 8, width // 8)
 
-            encoder_noise = torch.randn(noise_shape, generator=generator, device=device)
+            encoder_noise = paddle.randn(noise_shape, generator=generator, device=device)
             latents = encoder(input_images_tensor, encoder_noise)
 
-            latents_noise = torch.randn(noise_shape, generator=generator, device=device)
+            latents_noise = paddle.randn(noise_shape, generator=generator, device=device)
             sampler.set_strength(strength=strength)
             latents += latents_noise * sampler.initial_scale
 
             to_idle(encoder)
             del encoder, processed_input_images, input_images_tensor, latents_noise
         else:
-            latents = torch.randn(noise_shape, generator=generator, device=device)
+            latents = paddle.randn(noise_shape, generator=generator, device=device)
             latents *= sampler.initial_scale
 
         diffusion = models.get('diffusion') or model_loader.load_diffusion(device)
@@ -199,6 +199,6 @@ def generate(
 
         images = util.rescale(images, (-1, 1), (0, 255), clamp=True)
         images = util.move_channel(images, to="last")
-        images = images.to('cpu', torch.uint8).numpy()
+        images = images.to('cpu', paddle.uint8).numpy()
 
         return [Image.fromarray(image) for image in images]

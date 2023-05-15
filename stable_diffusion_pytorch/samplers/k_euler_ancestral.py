@@ -1,4 +1,4 @@
-import torch
+import paddle
 import numpy as np
 from .. import util
 
@@ -44,7 +44,7 @@ class KEulerAncestralSampler():
         sigma_up = sigma_to * (1 - (sigma_to ** 2 / sigma_from ** 2)) ** 0.5
         sigma_down = sigma_to ** 2 / sigma_from
         latents += output * (sigma_down - sigma_from)
-        noise = torch.randn(
+        noise = paddle.randn(
             latents.shape, generator=self.generator, device=latents.device)
         latents += noise * sigma_up
         return latents

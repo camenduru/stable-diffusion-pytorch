@@ -1,4 +1,4 @@
-import torch
+import paddle
 from . import Tokenizer, CLIP, Encoder, Decoder, Diffusion
 from . import util
 import warnings
@@ -32,7 +32,7 @@ def make_compatible(state_dict):
     return state_dict
 
 def load_clip(device):
-    state_dict = torch.load(util.get_file_path('ckpt/clip.pt'))
+    state_dict = paddle.load(util.get_file_path('ckpt/clip.pt'))
     state_dict = make_compatible(state_dict)
 
     clip = CLIP().to(device)
@@ -40,7 +40,7 @@ def load_clip(device):
     return clip
 
 def load_encoder(device):
-    state_dict = torch.load(util.get_file_path('ckpt/encoder.pt'))
+    state_dict = paddle.load(util.get_file_path('ckpt/encoder.pt'))
     state_dict = make_compatible(state_dict)
 
     encoder = Encoder().to(device)
@@ -48,7 +48,7 @@ def load_encoder(device):
     return encoder
 
 def load_decoder(device):
-    state_dict = torch.load(util.get_file_path('ckpt/decoder.pt'))
+    state_dict = paddle.load(util.get_file_path('ckpt/decoder.pt'))
     state_dict = make_compatible(state_dict)
 
     decoder = Decoder().to(device)
@@ -56,7 +56,7 @@ def load_decoder(device):
     return decoder
 
 def load_diffusion(device):
-    state_dict = torch.load(util.get_file_path('ckpt/diffusion.pt'))
+    state_dict = paddle.load(util.get_file_path('ckpt/diffusion.pt'))
     state_dict = make_compatible(state_dict)
 
     diffusion = Diffusion().to(device)

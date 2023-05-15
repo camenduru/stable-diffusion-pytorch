@@ -1,6 +1,6 @@
-import torch
-from torch import nn
-from torch.nn import functional as F
+import paddle
+from paddle import nn
+from paddle.nn import functional as F
 from .attention import SelfAttention
 
 
@@ -8,7 +8,7 @@ class CLIPEmbedding(nn.Module):
     def __init__(self, n_vocab: int, n_embd: int, n_token: int):
         super().__init__()
         self.token_embedding = nn.Embedding(n_vocab, n_embd)
-        self.position_value = nn.Parameter(torch.zeros((n_token, n_embd)))
+        self.position_value = nn.Parameter(paddle.zeros((n_token, n_embd)))
     
     def forward(self, tokens):
         x = self.token_embedding(tokens)
@@ -33,7 +33,7 @@ class CLIPLayer(nn.Module):
         residue = x
         x = self.layernorm_2(x)
         x = self.linear_1(x)
-        x = x * torch.sigmoid(1.702 * x)   # QuickGELU activation function
+        x = x * paddle.sigmoid(1.702 * x)   # QuickGELU activation function
         x = self.linear_2(x)
         x += residue
 
@@ -48,8 +48,8 @@ class CLIP(nn.Module):
         ])
         self.layernorm = nn.LayerNorm(768)
     
-    def forward(self, tokens: torch.LongTensor) -> torch.FloatTensor:
-        tokens = tokens.type(torch.long)
+    def forward(self, tokens: paddle.LongTensor) -> paddle.FloatTensor:
+        tokens = tokens.type(paddle.long)
         
         state = self.embedding(tokens)
         for layer in self.layers:

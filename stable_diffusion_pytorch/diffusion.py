@@ -1,6 +1,6 @@
-import torch
-from torch import nn
-from torch.nn import functional as F
+import paddle
+from paddle import nn
+from paddle.nn import functional as F
 from .attention import SelfAttention, CrossAttention
 
 
@@ -164,7 +164,7 @@ class UNet(nn.Module):
         x = self.bottleneck(x, context, time)
 
         for layers in self.decoders:
-            x = torch.cat((x, skip_connections.pop()), dim=1)
+            x = paddle.cat((x, skip_connections.pop()), dim=1)
             x = layers(x, context, time)
         
         return x

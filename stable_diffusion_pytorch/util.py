@@ -1,12 +1,12 @@
-import torch
+import paddle
 import numpy as np
 import os
 
 
 def get_time_embedding(timestep):
-    freqs = torch.pow(10000, -torch.arange(start=0, end=160, dtype=torch.float32) / 160)
-    x = torch.tensor([timestep], dtype=torch.float32)[:, None] * freqs[None]
-    return torch.cat([torch.cos(x), torch.sin(x)], dim=-1)
+    freqs = paddle.pow(10000, -paddle.arange(start=0, end=160, dtype=paddle.float32) / 160)
+    x = paddle.tensor([timestep], dtype=paddle.float32)[:, None] * freqs[None]
+    return paddle.cat([paddle.cos(x), paddle.sin(x)], dim=-1)
 
 def get_alphas_cumprod(beta_start=0.00085, beta_end=0.0120, n_training_steps=1000):
     betas = np.linspace(beta_start ** 0.5, beta_end ** 0.5, n_training_steps, dtype=np.float32) ** 2

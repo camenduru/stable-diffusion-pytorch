@@ -1,6 +1,6 @@
-import torch
-from torch import nn
-from torch.nn import functional as F
+import paddle
+from paddle import nn
+from paddle.nn import functional as F
 from .decoder import AttentionBlock, ResidualBlock
 
 
@@ -34,8 +34,8 @@ class Encoder(nn.Sequential):
                 x = F.pad(x, (0, 1, 0, 1))
             x = module(x)
 
-        mean, log_variance = torch.chunk(x, 2, dim=1)
-        log_variance = torch.clamp(log_variance, -30, 20)
+        mean, log_variance = paddle.chunk(x, 2, dim=1)
+        log_variance = paddle.clamp(log_variance, -30, 20)
         variance = log_variance.exp()
         stdev = variance.sqrt()
         x = mean + stdev * noise
