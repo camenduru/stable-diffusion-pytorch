@@ -109,15 +109,15 @@ def generate(
         clip.to(device)
         if do_cfg:
             cond_tokens = tokenizer.encode_batch(prompts)
-            cond_tokens = paddle.tensor(cond_tokens, dtype=paddle.long, device=device)
+            cond_tokens = paddle.tensor(cond_tokens, dtype=paddle.int64, device=device)
             cond_context = clip(cond_tokens)
             uncond_tokens = tokenizer.encode_batch(uncond_prompts)
-            uncond_tokens = paddle.tensor(uncond_tokens, dtype=paddle.long, device=device)
+            uncond_tokens = paddle.tensor(uncond_tokens, dtype=paddle.int64, device=device)
             uncond_context = clip(uncond_tokens)
             context = paddle.cat([cond_context, uncond_context])
         else:
             tokens = tokenizer.encode_batch(prompts)
-            tokens = paddle.tensor(tokens, dtype=paddle.long, device=device)
+            tokens = paddle.tensor(tokens, dtype=paddle.int64, device=device)
             context = clip(tokens)
         to_idle(clip)
         del tokenizer, clip

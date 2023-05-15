@@ -49,7 +49,7 @@ class CLIP(nn.Layer):
         self.layernorm = nn.LayerNorm(768)
     
     def forward(self, tokens: paddle.Tensor) -> paddle.Tensor:
-        tokens = tokens.type(paddle.long)
+        tokens = tokens.type(paddle.int64)
         
         state = self.embedding(tokens)
         for layer in self.layers:
