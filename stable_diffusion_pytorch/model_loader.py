@@ -36,7 +36,7 @@ def load_clip(device):
     state_dict = make_compatible(state_dict)
 
     clip = CLIP().to(device)
-    clip.load_state_dict(state_dict)
+    clip.load_dict(state_dict)
     return clip
 
 def load_encoder(device):
@@ -44,7 +44,7 @@ def load_encoder(device):
     state_dict = make_compatible(state_dict)
 
     encoder = Encoder().to(device)
-    encoder.load_state_dict(state_dict)
+    encoder.load_dict(state_dict)
     return encoder
 
 def load_decoder(device):
@@ -52,7 +52,7 @@ def load_decoder(device):
     state_dict = make_compatible(state_dict)
 
     decoder = Decoder().to(device)
-    decoder.load_state_dict(state_dict)
+    decoder.load_dict(state_dict)
     return decoder
 
 def load_diffusion(device):
@@ -60,7 +60,7 @@ def load_diffusion(device):
     state_dict = make_compatible(state_dict)
 
     diffusion = Diffusion().to(device)
-    diffusion.load_state_dict(state_dict)
+    diffusion.load_dict(state_dict)
     return diffusion
 
 def preload_models(device):
