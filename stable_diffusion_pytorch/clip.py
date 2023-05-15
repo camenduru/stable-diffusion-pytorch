@@ -8,8 +8,8 @@ class CLIPEmbedding(nn.Layer):
     def __init__(self, n_vocab: int, n_embd: int, n_token: int):
         super().__init__()
         self.token_embedding = nn.Embedding(n_vocab, n_embd)
-        self.position_value = nn.Parameter(paddle.zeros((n_token, n_embd)))
-    
+        self.position_value = paddle.create_parameter(shape=[n_token, n_embd], dtype='float32', default_initializer=paddle.nn.initializer.Constant(value=0.0))
+
     def forward(self, tokens):
         x = self.token_embedding(tokens)
         x += self.position_value
