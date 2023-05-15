@@ -1,5 +1,10 @@
-paddle >= 1.9
-numpy
-Pillow
 regex
 tqdm
+paddlepaddle-gpu==2.5.0rc0
+paddlenlp
+safetensors
+ppdiffusers -f https://www.paddlepaddle.org.cn/whl/paddlenlp.html --pre
+omegaconf
+fastcore
+einops
+lark
