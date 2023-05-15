@@ -33,7 +33,7 @@ class CLIPLayer(nn.Layer):
         residue = x
         x = self.layernorm_2(x)
         x = self.linear_1(x)
-        x = x * paddle.sigmoid(1.702 * x)   # QuickGELU activation function
+        x = x * F.sigmoid(1.702 * x)   # QuickGELU activation function
         x = self.linear_2(x)
         x += residue
 
