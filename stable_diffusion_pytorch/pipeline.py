@@ -56,7 +56,7 @@ def generate(
         n_inference_steps (`int`, *optional*, defaults to 50):
             The number of denoising steps. More denoising steps usually lead to a higher quality image at the
             expense of slower inference. This parameter will be modulated by `strength`.
-        models (`Dict[str, paddle.nn.Module]`, *optional*):
+        models (`Dict[str, paddle.nn.Layer]`, *optional*):
             Preloaded models. If some or all models are not provided, they will be loaded dynamically.
         seed (`int`, *optional*):
             A seed to make generation deterministic.

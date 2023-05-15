@@ -4,7 +4,7 @@ from paddle.nn import functional as F
 import math
 
 
-class SelfAttention(nn.Module):
+class SelfAttention(nn.Layer):
     def __init__(self, n_heads, d_embed, in_proj_bias=True, out_proj_bias=True):
         super().__init__()
         self.in_proj = nn.Linear(d_embed, 3 * d_embed, bias=in_proj_bias)
@@ -36,7 +36,7 @@ class SelfAttention(nn.Module):
         output = self.out_proj(output)
         return output
 
-class CrossAttention(nn.Module):
+class CrossAttention(nn.Layer):
     def __init__(self, n_heads, d_embed, d_cross, in_proj_bias=True, out_proj_bias=True):
         super().__init__()
         self.q_proj   = nn.Linear(d_embed, d_embed, bias=in_proj_bias)

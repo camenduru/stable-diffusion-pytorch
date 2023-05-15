@@ -4,7 +4,7 @@ from paddle.nn import functional as F
 from .attention import SelfAttention
 
 
-class AttentionBlock(nn.Module):
+class AttentionBlock(nn.Layer):
     def __init__(self, channels):
         super().__init__()
         self.groupnorm = nn.GroupNorm(32, channels)
@@ -24,7 +24,7 @@ class AttentionBlock(nn.Module):
         x += residue
         return x
 
-class ResidualBlock(nn.Module):
+class ResidualBlock(nn.Layer):
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.groupnorm_1 = nn.GroupNorm(32, in_channels)

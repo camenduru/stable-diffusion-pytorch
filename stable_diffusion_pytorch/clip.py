@@ -4,7 +4,7 @@ from paddle.nn import functional as F
 from .attention import SelfAttention
 
 
-class CLIPEmbedding(nn.Module):
+class CLIPEmbedding(nn.Layer):
     def __init__(self, n_vocab: int, n_embd: int, n_token: int):
         super().__init__()
         self.token_embedding = nn.Embedding(n_vocab, n_embd)
@@ -15,7 +15,7 @@ class CLIPEmbedding(nn.Module):
         x += self.position_value
         return x
 
-class CLIPLayer(nn.Module):
+class CLIPLayer(nn.Layer):
     def __init__(self, n_head: int, n_embd: int):
         super().__init__()
         self.layernorm_1 = nn.LayerNorm(n_embd)
@@ -39,11 +39,11 @@ class CLIPLayer(nn.Module):
 
         return x
 
-class CLIP(nn.Module):
+class CLIP(nn.Layer):
     def __init__(self):
         super().__init__()
         self.embedding = CLIPEmbedding(49408, 768, 77)
-        self.layers = nn.ModuleList([
+        self.layers = nn.LayerList([
             CLIPLayer(12, 768) for i in range(12)
         ])
         self.layernorm = nn.LayerNorm(768)

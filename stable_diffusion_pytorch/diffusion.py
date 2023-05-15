@@ -4,7 +4,7 @@ from paddle.nn import functional as F
 from .attention import SelfAttention, CrossAttention
 
 
-class TimeEmbedding(nn.Module):
+class TimeEmbedding(nn.Layer):
     def __init__(self, n_embd):
         super().__init__()
         self.linear_1 = nn.Linear(n_embd, 4 * n_embd)
@@ -16,7 +16,7 @@ class TimeEmbedding(nn.Module):
         x = self.linear_2(x)
         return x
 
-class ResidualBlock(nn.Module):
+class ResidualBlock(nn.Layer):
     def __init__(self, in_channels, out_channels, n_time=1280):
         super().__init__()
         self.groupnorm_feature = nn.GroupNorm(32, in_channels)
@@ -48,7 +48,7 @@ class ResidualBlock(nn.Module):
 
         return merged + self.residual_layer(residue)
 
-class AttentionBlock(nn.Module):
+class AttentionBlock(nn.Layer):
     def __init__(self, n_head: int, n_embd: int, d_context=768):
         super().__init__()
         channels = n_head * n_embd
@@ -98,7 +98,7 @@ class AttentionBlock(nn.Module):
 
         return self.conv_output(x) + residue_long
 
-class Upsample(nn.Module):
+class Upsample(nn.Layer):
     def __init__(self, channels):
         super().__init__()
         self.conv = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
@@ -118,10 +118,10 @@ class SwitchSequential(nn.Sequential):
                 x = layer(x)
         return x
 
-class UNet(nn.Module):
+class UNet(nn.Layer):
     def __init__(self):
         super().__init__()
-        self.encoders = nn.ModuleList([
+        self.encoders = nn.LayerList([
             SwitchSequential(nn.Conv2d(4, 320, kernel_size=3, padding=1)),
             SwitchSequential(ResidualBlock(320, 320), AttentionBlock(8, 40)),
             SwitchSequential(ResidualBlock(320, 320), AttentionBlock(8, 40)),
@@ -140,7 +140,7 @@ class UNet(nn.Module):
             AttentionBlock(8, 160),
             ResidualBlock(1280, 1280),
         )
-        self.decoders = nn.ModuleList([
+        self.decoders = nn.LayerList([
             SwitchSequential(ResidualBlock(2560, 1280)),
             SwitchSequential(ResidualBlock(2560, 1280)),
             SwitchSequential(ResidualBlock(2560, 1280), Upsample(1280)),
@@ -170,7 +170,7 @@ class UNet(nn.Module):
         return x
 
 
-class FinalLayer(nn.Module):
+class FinalLayer(nn.Layer):
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.groupnorm = nn.GroupNorm(32, in_channels)
@@ -182,7 +182,7 @@ class FinalLayer(nn.Module):
         x = self.conv(x)
         return x
 
-class Diffusion(nn.Module):
+class Diffusion(nn.Layer):
     def __init__(self):
         super().__init__()
         self.time_embedding = TimeEmbedding(320)
